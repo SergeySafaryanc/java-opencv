@@ -21,9 +21,8 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void getBlackChannel() {
-        Mat mat = imageService.getBlackChannel(5, TEST_IMAGE);
-
+    void getLab2() {
+        Mat mat = imageService.getSobel(TEST_IMAGE);
         Imgcodecs.imwrite("/home/sergey/IdeaProjects/cv/imgs/0noise.png", mat);
     }
 

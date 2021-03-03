@@ -2,35 +2,31 @@ package ru.sfedu.cv.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opencv.imgproc.Imgproc;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.sfedu.cv.Constant;
 import ru.sfedu.cv.service.ImageService;
-import ru.sfedu.cv.service.OSService;
 
-import java.util.List;
-import java.util.Locale;
+import javax.annotation.PostConstruct;
+
 
 @Service
 public class ImageServiceImpl implements ImageService {
     private static final Logger log = LogManager.getLogger(ImageServiceImpl.class);
 
-    protected final List<OSService> osServices;
+    @Value("${native.opencv.path}")
+    private String pathToNativeLib;
 
-    @Autowired
-    public ImageServiceImpl(List<OSService> osServices) {
-        this.osServices = osServices;
-
-        osServices.stream()
-                .filter(os -> os.getType().equals(getOS_Type()))
-                .forEach(OSService::loadLibrary);
+    @PostConstruct
+    void initNativeLibrary() {
+        System.load(pathToNativeLib);
     }
 
-
     @Override
-    public Mat getBlackChannel(Integer channel, String imgPath) {
+    public Mat getLab2(Integer channel, String imgPath) {
         Mat img = Imgcodecs.imread(imgPath);
         long totalBytes = (img.total() + img.elemSize());
         byte[] buffer = new byte[Math.toIntExact(totalBytes)];
@@ -42,14 +38,23 @@ public class ImageServiceImpl implements ImageService {
         return img;
     }
 
-    protected Constant.OS_TYPE getOS_Type() {
-        final String os = System.getProperty("os.name").toUpperCase(Locale.ENGLISH);
-        return switch (os) {
-            case "WINDOWS" -> Constant.OS_TYPE.WINDOWS;
-            case "LINUX" -> Constant.OS_TYPE.LINUX;
-            default -> Constant.OS_TYPE.OTHER;
-        };
+    @Override
+    public Mat getSobel(String imgPath) {
+        Mat grayImage = new Mat();
+        Mat srcImage = Imgcodecs.imread(imgPath, Imgcodecs.IMREAD_COLOR);
+        Imgproc.cvtColor(srcImage, grayImage, Imgproc.COLOR_BGR2GRAY);
+        Mat dstSobelX = new Mat();
+        Imgproc.Sobel(grayImage, dstSobelX, CvType.CV_32F, 1, 0);
+        Mat dstSobelY = new Mat();
+        Imgproc.Sobel(grayImage, dstSobelY, CvType.CV_32F, 0, 1);
+        return dstSobelY;
+//        Imgcodecs.imwrite(imgPath, dstSobelX);
+//        Imgcodecs.imwrite(destDirPath + "SobelY_" + srcFileName, dstSobelY);
     }
 
+    @Override
+    public Mat getLaplace(String imgPath) {
+        return null;
+    }
 
 }
