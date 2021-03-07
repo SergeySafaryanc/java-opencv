@@ -1,9 +1,9 @@
 package ru.sfedu.cv;
 
+import org.opencv.core.Core;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 
 @SpringBootApplication
 public class CvApplication implements CommandLineRunner {

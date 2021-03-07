@@ -5,6 +5,10 @@
     <title>Title</title>
 </head>
 <body>
-    <p th:text="${img}"></p>
+    <tr th:each="instance : ${instanceMap}">
+        <td th:text="${instance.key}"></td>
+        <img th:src="@{'data:image/jpeg;base64,'+${instance.value}}"/>
+    </tr>
+<!--    <img th:src="@{'data:image/jpeg;base64,'+${img}}"/>-->
 </body>
 </html>

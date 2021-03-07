@@ -1,3 +1,21 @@
-native:
-  opencv:
-    path: "/home/sergey/IdeaProjects/cv/native/libopencv_java451.so"
+spring:
+  profiles:
+    active: dev
+
+  thymeleaf:
+    cache: false
+  mvc:
+    format:
+      date: dd/MM/yyyy
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 10MB
+
+logging:
+  level:
+    ru.sfedu.cv: debug
+
+open-cv:
+  path: "/home/sergey/IdeaProjects/cv/native/libopencv_java451.so"
+
