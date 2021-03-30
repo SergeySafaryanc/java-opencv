@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.sfedu.cv.service.TaskService;
 
 import java.io.IOException;
@@ -26,6 +27,22 @@ public class TestImageController {
         model.addAttribute("instanceMap", taskService.task1ToView());
         return "image";
     }
+
+    @GetMapping(value = "/lab2/1/1")
+    public String sobel(Model model,
+                        @RequestParam int dx,
+                        @RequestParam int dy) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewSobel(dx, dy));
+        return "image";
+    }
+
+    @GetMapping(value = "/lab2/1/2")
+    public String sobel(Model model,
+                        @RequestParam int xSize) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewLaplace(xSize));
+        return "image";
+    }
+
 
 
 }

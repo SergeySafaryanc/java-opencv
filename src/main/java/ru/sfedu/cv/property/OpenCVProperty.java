@@ -3,8 +3,9 @@ package ru.sfedu.cv.property;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
 
 @Configuration
 public class OpenCVProperty {
@@ -13,10 +14,11 @@ public class OpenCVProperty {
     @Value("${open-cv.path}")
     private String lib;
 
-    @Bean
-    void loadLib() {
+    @PostConstruct
+    void initOpenCV() {
         log.debug(lib);
         System.load(lib);
     }
+
 
 }

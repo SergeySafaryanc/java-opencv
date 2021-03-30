@@ -6,7 +6,10 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.sfedu.cv.service.ConversionService;
 import ru.sfedu.cv.service.ImageService;
@@ -21,6 +24,9 @@ import static org.opencv.core.CvType.CV_8UC3;
 @Service
 public class TaskServiceImpl implements TaskService {
     private static final Logger log = LogManager.getLogger(TaskServiceImpl.class);
+
+    @Value("${show.image}")
+    private String showImage;
 
     protected final ImageService imageService;
     protected final ConversionService conversionService;
@@ -65,6 +71,31 @@ public class TaskServiceImpl implements TaskService {
 
         Mat rmRed = imageService.convertBlackByChannel(2, rmGreen);
         resultMap.put(2, conversionService.matToWebImg(rmRed));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewSobel(int dx, int dy) throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat noiseMat = Imgcodecs.imread(showImage);
+
+        Mat noiseToSobelMat = imageService.convertSobel(noiseMat, dx, dy);
+        resultMap.put(0, conversionService.matToWebImg(noiseToSobelMat));
+
+//        Mat noiseToLaplaceMat = imageService.convertLaplace(noiseMat, dx);
+//        resultMap.put(1, conversionService.matToWebImg(noiseToLaplaceMat));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewLaplace(int xSize) throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat noiseMat = Imgcodecs.imread(showImage);
+
+        Mat noiseToLaplaceMat = imageService.convertLaplace(noiseMat, xSize);
+        resultMap.put(1, conversionService.matToWebImg(noiseToLaplaceMat));
 
         return resultMap;
     }

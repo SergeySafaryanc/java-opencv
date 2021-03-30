@@ -20,7 +20,12 @@ class TaskServiceImplTest {
     TaskService taskService;
 
     @Test
-    void task1() {
+    void isNotNullTest() {
+        assertNotNull(taskService);
+    }
+
+    @Test
+    void testTask1() {
         Mat blackImageMat = taskService.task1().get(2);
         List<Mat> bgr = new ArrayList<>();
         Core.split(blackImageMat, bgr);
