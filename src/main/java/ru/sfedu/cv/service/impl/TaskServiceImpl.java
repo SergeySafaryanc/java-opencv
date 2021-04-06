@@ -16,10 +16,13 @@ import ru.sfedu.cv.service.ImageService;
 import ru.sfedu.cv.service.TaskService;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.opencv.core.CvType.CV_8UC3;
+import static org.opencv.imgcodecs.Imgcodecs.IMREAD_COLOR;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -83,9 +86,6 @@ public class TaskServiceImpl implements TaskService {
         Mat noiseToSobelMat = imageService.convertSobel(noiseMat, dx, dy);
         resultMap.put(0, conversionService.matToWebImg(noiseToSobelMat));
 
-//        Mat noiseToLaplaceMat = imageService.convertLaplace(noiseMat, dx);
-//        resultMap.put(1, conversionService.matToWebImg(noiseToLaplaceMat));
-
         return resultMap;
     }
 
@@ -96,6 +96,74 @@ public class TaskServiceImpl implements TaskService {
 
         Mat noiseToLaplaceMat = imageService.convertLaplace(noiseMat, xSize);
         resultMap.put(1, conversionService.matToWebImg(noiseToLaplaceMat));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewMirror() throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+
+        Mat defaultMat = Imgcodecs.imread(showImage);
+        resultMap.put(0, conversionService.matToWebImg(defaultMat));
+
+        Mat mirrorFlipCode0 = imageService.mirrorImage(defaultMat, 0);
+        resultMap.put(1, conversionService.matToWebImg(mirrorFlipCode0));
+
+        Mat mirrorFlipCode1 = imageService.mirrorImage(defaultMat, 1);
+        resultMap.put(2, conversionService.matToWebImg(mirrorFlipCode1));
+
+        Mat mirrorFlipCodeMinus1 = imageService.mirrorImage(defaultMat, -1);
+        resultMap.put(3, conversionService.matToWebImg(mirrorFlipCodeMinus1));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewUnion() throws IOException {
+        final List<Mat> matList = Arrays.asList(Imgcodecs.imread(showImage), Imgcodecs.imread(showImage));
+
+        Map<Integer, String> resultMap = new HashMap<>();
+        final List<Mat> list = imageService.unionImage(matList, Imgcodecs.imread(showImage), true);
+
+        log.info(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            resultMap.put(i, conversionService.matToWebImg(list.get(i)));
+        }
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewRepeat(int ny, int nx) throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+
+        Mat defaultMat = Imgcodecs.imread(showImage);
+
+        Mat rotationImage = imageService.repeatImage(defaultMat, ny, nx);
+        resultMap.put(0, conversionService.matToWebImg(rotationImage));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewResize(int width, int height) throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+
+        Mat defaultMat = Imgcodecs.imread(showImage, IMREAD_COLOR);
+        Mat resizeImage = imageService.resizeImage(defaultMat, width, height);
+        resultMap.put(0, conversionService.matToWebImg(resizeImage));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task2ToViewGeometryChange() throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = Imgcodecs.imread(showImage);
+
+        Mat geometryChange = imageService.geometryChangeImage(defaultMat);
+        resultMap.put(0, conversionService.matToWebImg(geometryChange));
 
         return resultMap;
     }

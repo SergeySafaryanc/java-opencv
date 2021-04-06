@@ -22,8 +22,8 @@ class ImageServiceImplTest {
 
     @Test
     void getLab2() {
-        Mat mat = Imgcodecs.imread(TEST_IMAGE);
-        Imgcodecs.imwrite("/home/sergey/IdeaProjects/cv/imgs/0no111ise.jpg", mat);
+//        Mat mat = Imgcodecs.imread(TEST_IMAGE);
+//        Imgcodecs.imwrite("/home/sergey/IdeaProjects/cv/imgs/0no111ise.jpg", mat);
 //        Mat mat = imageService.getSobel(TEST_IMAGE);
 //        Imgcodecs.imwrite("/home/sergey/IdeaProjects/cv/imgs/0noise.jpeg", mat);
     }

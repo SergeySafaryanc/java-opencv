@@ -11,4 +11,11 @@ public interface TaskService {
 
     Map<Integer, String> task2ToViewSobel(int dx, int dy) throws IOException;
     Map<Integer, String> task2ToViewLaplace(int xSize) throws IOException;
+    Map<Integer, String> task2ToViewMirror() throws IOException;
+    Map<Integer, String> task2ToViewUnion() throws IOException;
+    Map<Integer, String> task2ToViewRepeat(int ny, int nx) throws IOException;
+    Map<Integer, String> task2ToViewResize(int width, int height) throws IOException;
+    Map<Integer, String> task2ToViewGeometryChange() throws IOException;
+
+
 }

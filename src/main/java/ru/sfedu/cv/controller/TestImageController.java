@@ -43,6 +43,37 @@ public class TestImageController {
         return "image";
     }
 
+    @GetMapping(value = "/lab2/2/1")
+    public String mirror(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewMirror());
+        return "image";
+    }
+
+    @GetMapping(value = "/lab2/2/2")
+    public String union(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewUnion());
+        return "image";
+    }
+
+    @GetMapping(value = "/lab2/2/3")
+    public String repeat(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewRepeat(10, 10));
+        return "image";
+    }
+
+    @GetMapping(value = "/lab2/2/4")
+    public String resize(Model model,
+                         @RequestParam int width,
+                         @RequestParam int height) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewResize(width, height));
+        return "image";
+    }
+
+    @GetMapping(value = "/lab2/2/5")
+    public String resize(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task2ToViewGeometryChange());
+        return "image";
+    }
 
 
 }
