@@ -55,13 +55,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Mat unionImage(List<Mat> matList, Mat dst, boolean isVertical) {
-        if (isVertical) {
-            Core.vconcat(matList, dst);
-        } else {
-            Core.hconcat(matList, dst);
-        }
-        return dst;
+    public Mat unionImage(Mat mat, Mat dst) {
+        Core.addWeighted(mat, 0.5, dst, 0.5, 0.0, mat);
+        return mat;
     }
 
     @Override

@@ -121,10 +121,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Map<Integer, String> task2ToViewUnion() throws IOException {
-        final List<Mat> matList = Arrays.asList(Imgcodecs.imread(showImage), Imgcodecs.imread(showImage));
+        Mat defaultMat1 = Imgcodecs.imread(showImage);
+        Mat defaultMat2 = Imgcodecs.imread(showImage);
 
         Map<Integer, String> resultMap = new HashMap<>();
-        Mat list = imageService.unionImage(matList, Imgcodecs.imread(showImage), false);
+        Mat list = imageService.unionImage(defaultMat1, defaultMat2);
 
         resultMap.put(0, conversionService.matToWebImg(list));
         return resultMap;
