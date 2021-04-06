@@ -124,13 +124,9 @@ public class TaskServiceImpl implements TaskService {
         final List<Mat> matList = Arrays.asList(Imgcodecs.imread(showImage), Imgcodecs.imread(showImage));
 
         Map<Integer, String> resultMap = new HashMap<>();
-        final List<Mat> list = imageService.unionImage(matList, Imgcodecs.imread(showImage), true);
+        Mat list = imageService.unionImage(matList, Imgcodecs.imread(showImage), false);
 
-        log.info(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            resultMap.put(i, conversionService.matToWebImg(list.get(i)));
-        }
-
+        resultMap.put(0, conversionService.matToWebImg(list));
         return resultMap;
     }
 

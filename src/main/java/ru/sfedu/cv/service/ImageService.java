@@ -9,7 +9,7 @@ public interface ImageService {
     Mat convertSobel(Mat image, int dx, int dy);
     Mat convertLaplace(Mat image, int kSize);
     Mat mirrorImage(Mat image, int flipCode);
-    List<Mat> unionImage(List<Mat> matList, Mat dst, boolean isVertical);
+    Mat unionImage(List<Mat> matList, Mat dst, boolean isVertical);
     Mat repeatImage(Mat image, int ny, int nx);
     Mat resizeImage(Mat image, int width, int height);
     Mat geometryChangeImage(Mat image);
