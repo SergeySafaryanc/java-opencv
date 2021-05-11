@@ -2,10 +2,7 @@ package ru.sfedu.cv.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.opencv.core.CvType.CV_8UC3;
 import static org.opencv.imgcodecs.Imgcodecs.IMREAD_COLOR;
@@ -161,6 +159,87 @@ public class TaskServiceImpl implements TaskService {
 
         Mat geometryChange = imageService.geometryChangeImage(defaultMat);
         resultMap.put(0, conversionService.matToWebImg(geometryChange));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task3ToMorphingRect() throws IOException {
+        double[] sizes = {3, 5, 7, 9, 13, 15};
+
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = Imgcodecs.imread(showImage);
+
+        AtomicInteger integer = new AtomicInteger(0);
+        for (double size: sizes) {
+            Mat morphRect = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(size, size));
+
+            Mat dst1 = defaultMat.clone();
+            Imgproc.dilate(defaultMat, dst1, morphRect);
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(dst1));
+
+            Mat dst1_1 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_1, Imgproc.MORPH_GRADIENT, morphRect);
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(dst1_1));
+
+            Mat dst1_2 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_2, Imgproc.MORPH_BLACKHAT, morphRect);
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(dst1_2));
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task3ToMorphingEllipse() throws IOException {
+        double[] sizes = {3, 5, 7, 9, 13, 15};
+
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = Imgcodecs.imread(showImage);
+
+        AtomicInteger integer = new AtomicInteger(0);
+        for (double size: sizes) {
+            Mat morphEllipse = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(size, size));
+
+            Mat dst1 = defaultMat.clone();
+            Imgproc.dilate(defaultMat, dst1, morphEllipse);
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(dst1));
+
+            Mat dst1_1 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_1, Imgproc.MORPH_GRADIENT, morphEllipse);
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(dst1_1));
+
+            Mat dst1_2 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_2, Imgproc.MORPH_BLACKHAT, morphEllipse);
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(dst1_2));
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task4ToWarp() throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = Imgcodecs.imread(showImage);
+
+        Mat transMat = new Mat(2, 3, CvType.CV_64FC1);
+        MatOfPoint2f src = new MatOfPoint2f(
+                new Point(0, 0),
+                new Point(defaultMat.cols(), 0),
+                new Point(0, defaultMat.rows()),
+                new Point(defaultMat.cols(), defaultMat.rows())
+        );
+        int x = 50;
+        int y = 50;
+        MatOfPoint2f target = new MatOfPoint2f(
+                new Point(x, y),
+                new Point(defaultMat.cols() - x, 0),
+                new Point(0, defaultMat.rows() - y),
+                new Point(defaultMat.cols() - x, defaultMat.rows() - y)
+        );
+
+        Mat matWarp = Imgproc.getPerspectiveTransform(src, target);
+        Mat res = new Mat();
+        Imgproc.warpPerspective(defaultMat, res, matWarp, defaultMat.size());
+        resultMap.put(0, conversionService.matToWebImg(res));
 
         return resultMap;
     }

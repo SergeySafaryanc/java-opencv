@@ -75,5 +75,23 @@ public class TestImageController {
         return "image";
     }
 
+    @GetMapping(value = "/lab3/1/rect")
+    public String lab3_1_rect(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task3ToMorphingRect());
+        return "image";
+    }
+
+    @GetMapping(value = "/lab3/1/ellipse")
+    public String lab3_1_ellipse(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task3ToMorphingEllipse());
+        return "image";
+    }
+
+    @GetMapping(value = "/lab4/1")
+    public String lab4_1(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task4ToWarp());
+        return "image";
+    }
+
 
 }

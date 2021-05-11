@@ -17,5 +17,9 @@ public interface TaskService {
     Map<Integer, String> task2ToViewResize(int width, int height) throws IOException;
     Map<Integer, String> task2ToViewGeometryChange() throws IOException;
 
+    Map<Integer, String> task3ToMorphingRect() throws IOException;
+    Map<Integer, String> task3ToMorphingEllipse() throws IOException;
+
+    Map<Integer, String> task4ToWarp() throws IOException;
 
 }

@@ -17,7 +17,7 @@ logging:
     ru.sfedu.cv: debug
 
 open-cv:
-  path: "/home/sergey/IdeaProjects/cv/native/libopencv_java451.so"
+  path: "/home/sergey/IdeaProjects/java-opencv/native/libopencv_java451.so"
 
 show:
-  image: "/home/sergey/IdeaProjects/cv/imgs/sql.jpg"
+  image: "/home/sergey/IdeaProjects/java-opencv/imgs/sql.jpg"
