@@ -93,5 +93,11 @@ public class TestImageController {
         return "image";
     }
 
+    @GetMapping(value = "/lab5/1")
+    public String lab5_1(Model model, @RequestParam int point) throws IOException {
+        model.addAttribute("instanceMap", taskService.task5ToFill(point));
+        return "image";
+    }
+
 
 }

@@ -244,6 +244,29 @@ public class TaskServiceImpl implements TaskService {
         return resultMap;
     }
 
+    @Override
+    public Map<Integer, String> task5ToFill(Integer initVal) throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = Imgcodecs.imread(showImage);
+
+        Point seedPoint = new Point(0,0);
+        Scalar newVal = new Scalar(0,255,0);
+        Scalar loDiff = new Scalar(initVal,initVal,initVal);
+        Scalar upDiff = new Scalar(initVal,initVal,initVal);
+        Mat mask = new Mat();
+
+        Imgproc.floodFill(defaultMat, mask, seedPoint, newVal, new Rect(), loDiff, upDiff,
+                Imgproc.FLOODFILL_FIXED_RANGE + 8);
+        resultMap.put(0, conversionService.matToWebImg(defaultMat));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task5ToPyr() throws IOException {
+        return null;
+    }
+
     protected Mat noiseMat(int height, int width) {
         Mat noiseMat = new Mat(new Size(width, height), CV_8UC3, new Scalar(0, 0, 0));
         Core.randn(noiseMat, 20, 50);
