@@ -21,3 +21,4 @@ open-cv:
 
 show:
   image: "/home/sergey/IdeaProjects/java-opencv/imgs/sql.jpg"
+  square: "/home/sergey/IdeaProjects/java-opencv/imgs/square.jpg"

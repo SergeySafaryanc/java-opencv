@@ -99,5 +99,17 @@ public class TestImageController {
         return "image";
     }
 
+    @GetMapping(value = "/lab5/2")
+    public String lab5_2(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task5ToPyr(11, true));
+        return "image";
+    }
+
+    @GetMapping(value = "/lab5/3")
+    public String lab5_3(Model model) throws IOException {
+        model.addAttribute("instanceMap", taskService.task5ToSquare());
+        return "image";
+    }
+
 
 }

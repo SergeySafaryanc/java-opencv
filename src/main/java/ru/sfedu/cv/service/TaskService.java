@@ -23,6 +23,7 @@ public interface TaskService {
     Map<Integer, String> task4ToWarp() throws IOException;
 
     Map<Integer, String> task5ToFill(Integer initPoint) throws IOException;
-    Map<Integer, String> task5ToPyr() throws IOException;
+    Map<Integer, String> task5ToPyr(int factor, boolean direction) throws IOException;
+    Map<Integer, String> task5ToSquare() throws IOException;
 
 }

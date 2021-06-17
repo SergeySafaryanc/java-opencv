@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,7 @@ import ru.sfedu.cv.service.ImageService;
 import ru.sfedu.cv.service.TaskService;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.opencv.core.CvType.CV_8UC3;
@@ -28,6 +26,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Value("${show.image}")
     private String showImage;
+    @Value("${show.square}")
+    private String showSquare;
 
     protected final ImageService imageService;
     protected final ConversionService conversionService;
@@ -263,8 +263,92 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Map<Integer, String> task5ToPyr() throws IOException {
-        return null;
+    public Map<Integer, String> task5ToPyr(int factor, boolean direction) throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = noiseMat(350, 350);
+
+        Mat mask = new Mat();
+        resultMap.put(0, conversionService.matToWebImg(defaultMat));
+
+        Imgproc.pyrDown(defaultMat, mask);
+        resultMap.put(1, conversionService.matToWebImg(mask));
+
+        Imgproc.pyrUp(mask, mask);
+        resultMap.put(2, conversionService.matToWebImg(mask));
+
+        Core.subtract(defaultMat, mask, mask);
+        resultMap.put(3, conversionService.matToWebImg(mask));
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<Integer, String> task5ToSquare() throws IOException {
+        Map<Integer, String> resultMap = new HashMap<>();
+        Mat defaultMat = Imgcodecs.imread(showSquare);
+
+        Mat grayImage = new Mat();
+        Imgproc.cvtColor(defaultMat, grayImage, Imgproc.COLOR_BGR2GRAY);
+        resultMap.put(0, conversionService.matToWebImg(grayImage));
+
+        Mat denoisingImage = new Mat();
+        Photo.fastNlMeansDenoising(grayImage, denoisingImage);
+        resultMap.put(1, conversionService.matToWebImg(denoisingImage));
+
+        Mat histogramEqualizationImage = new Mat();
+        Imgproc.equalizeHist(denoisingImage, histogramEqualizationImage);
+        resultMap.put(2, conversionService.matToWebImg(histogramEqualizationImage));
+
+
+        Mat morphologicalOpeningImage = new Mat();
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
+        Imgproc.morphologyEx(histogramEqualizationImage, morphologicalOpeningImage, Imgproc.MORPH_RECT, kernel);
+        resultMap.put(3, conversionService.matToWebImg(morphologicalOpeningImage));
+
+        Mat subtractImage = new Mat();
+        Core.subtract(histogramEqualizationImage, morphologicalOpeningImage, subtractImage);
+        resultMap.put(4, conversionService.matToWebImg(subtractImage));
+
+        Mat thresholdImage = new Mat();
+        double threshold = Imgproc.threshold(subtractImage, thresholdImage, 50, 255, Imgproc.THRESH_OTSU);
+        resultMap.put(5, conversionService.matToWebImg(thresholdImage));
+        thresholdImage.convertTo(thresholdImage, CvType.CV_16SC1);
+
+        Mat edgeImage = new Mat();
+        thresholdImage.convertTo(thresholdImage, CvType.CV_8U);
+        Imgproc.Canny(thresholdImage, edgeImage, threshold, threshold * 3, 3, true);
+        resultMap.put(6, conversionService.matToWebImg(edgeImage));
+
+        Mat dilatedImage = new Mat();
+        Imgproc.dilate(thresholdImage, dilatedImage, kernel);
+        resultMap.put(7, conversionService.matToWebImg(dilatedImage));
+
+        List<MatOfPoint> contours = new ArrayList<>();
+        Imgproc.findContours(dilatedImage, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        contours.sort(Collections.reverseOrder(Comparator.comparing(Imgproc::contourArea)));
+//        System.out.println(contours.size());
+        AtomicInteger integer = new AtomicInteger(8);
+        for (MatOfPoint contour : contours.subList(0, 1)) {
+            log.debug(Imgproc.contourArea(contour));
+            MatOfPoint2f point2f = new MatOfPoint2f();
+            MatOfPoint2f approxContour2f = new MatOfPoint2f();
+            MatOfPoint approxContour = new MatOfPoint();
+            contour.convertTo(point2f, CvType.CV_32FC2);
+            double arcLength = Imgproc.arcLength(point2f, true);
+            Imgproc.approxPolyDP(point2f, approxContour2f, 0.03 * arcLength, true);
+            approxContour2f.convertTo(approxContour, CvType.CV_32S);
+            Rect rect = Imgproc.boundingRect(approxContour);
+            double ratio = (double) rect.height / rect.width;
+            if (Math.abs(0.3 - ratio) > 0.15) {
+                continue;
+            }
+            Mat submat = defaultMat.submat(rect);
+            Imgproc.resize(submat, submat, new Size(400, 400 * ratio));
+            resultMap.put(integer.incrementAndGet(), conversionService.matToWebImg(submat));
+        }
+
+        return resultMap;
     }
 
     protected Mat noiseMat(int height, int width) {
